@@ -2,12 +2,15 @@ package kantason.daikin.co.th.daikinairlesson1.fragment;
 
 import android.app.TimePickerDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.SwitchCompat;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -414,11 +417,61 @@ public class EditSceduleFragment extends Fragment {
 
         if (item.getItemId() == R.id.itemDelete) {
 
+            deleteItem();
 
             return true;
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void deleteItem() {
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setCancelable(false);
+        builder.setIcon(R.drawable.ic_action_name);
+        builder.setTitle("Confirm Delete");
+        builder.setMessage("Do you want to delete item ?");
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+               myDelete();
+
+                FragmentManager fragmentManager = getFragmentManager();
+                if (fragmentManager.getBackStackEntryCount() > 0) {
+                    fragmentManager.popBackStack(null,fragmentManager.POP_BACK_STACK_INCLUSIVE);
+                }
+
+
+
+                getActivity()
+                        .getSupportFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.contentMainFragment, SceduleFragment.sceduleInstance(idString,nameString,ipAddressString,macAddressString))
+                       .addToBackStack(null)
+                        .commit();
+
+
+                dialog.dismiss();
+            }   // onclick
+        });
+
+        builder.show();
+
+    }
+
+    private void myDelete() {
+        SQLiteDatabase sqLiteDatabase = getActivity()
+                .openOrCreateDatabase(MyOpenHelper.nameDatabaseSTRING,
+                        Context.MODE_PRIVATE, null);
+        sqLiteDatabase.delete("controllerTABLE","id" + "=" + idController, null);
     }
 
     private void saveController() {

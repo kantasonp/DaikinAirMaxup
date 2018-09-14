@@ -28,6 +28,7 @@ public class SetBackFragment extends Fragment {
     private String idString, nameString, ipAddressString,macAddressString;
     private String settempString;
     private String SetbackAirString,EnableSString;
+    private String setString;
 
     public static SetBackFragment setbackInstance (String idString,
                                                    String nameString,
@@ -111,10 +112,13 @@ public class SetBackFragment extends Fragment {
                 settempString = strings[position];
 
                 int settint =  Integer.parseInt(settempString)- 20 ;
-                String setString = Integer.toString(settint);
+                setString = Integer.toString(settint);
 
-                MyManage myManage = new MyManage(getActivity());
-                myManage.addSetback(idString, "1",setString.toString());
+//                MyManage myManage = new MyManage(getActivity());
+//                myManage.addSetback(idString, "1",setString.toString());
+
+                setbacktosqlite();
+
             }
 
             @Override
@@ -122,6 +126,12 @@ public class SetBackFragment extends Fragment {
 
             }
         });
+    }
+
+    private void setbacktosqlite() {
+        SQLiteDatabase sqLiteDatabase = getActivity().openOrCreateDatabase(MyOpenHelper.nameDatabaseSTRING,
+                Context.MODE_PRIVATE, null);
+        sqLiteDatabase.execSQL("UPDATE setbackTABLE SET SetbackData='" + setString.toString() + "' WHERE id='" + idString + "'");
     }
 
     private void createToolbar() {
